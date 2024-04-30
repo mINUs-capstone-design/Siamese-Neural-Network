@@ -1,17 +1,30 @@
+
+"""
+<각 파일 이름>
+KsponSpeech_[숫자].pcm : .wav로 변환 전 원본 .pcm 파일
+KsponSpeech_[숫자].wav : .pcm -> .wav로 변환된 파일
+VAD_KsponSpeech_[숫자].wav : VAD 알고리즘 적용된 .wav 파일
+Mel_spectrum_KsponSpeech_[숫자].png : RGBA 4채널 Mel 적용 이미지
+c_[숫자].jpg : RGB 3채널로 변환된 Mel 적용 이미지
+"""
+
 # ----------------------------------------------------------------
-#1
 import os
 import numpy as np
 import librosa
+import librosa.effects
 import librosa.display
-import matplotlib.pyplot as plt
+import soundfile as sf
+import datetime
+import glob
 import wave
 from PIL import Image
-import glob
+import matplotlib.pyplot as plt
+import scipy
+from scipy.io.wavfile import read
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
-#2
 # .pcm -> .wav 변환하는 파트
 def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
     # PCM 파일 열기
@@ -35,8 +48,10 @@ def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
             wav.writeframes(data)
 # ----------------------------------------------------------------
 
+# ----------------------------------------------------------------
 # 현재 실행 중인 파일의 경로
 current_directory = os.path.dirname(os.path.abspath(__file__))
+# ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
 # 이미지 변환 함수
@@ -58,7 +73,14 @@ def change_picture():
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
-#3
+# VAD 알고리즘
+def wav_to_vad(no_vad_wav, vad_wav):
+    y, sr = librosa.load(no_vad_wav)
+    y_trimmed, index = librosa.effects.trim(y, top_db=30)
+    sf.write(vad_wav, y_trimmed, sr)
+# ----------------------------------------------------------------
+
+# ----------------------------------------------------------------
 # 현재 위치한 디렉토리 내의 확장자가 .pcm인 모든 파일 불러오기
 pcm_directory = "."
 
@@ -75,6 +97,12 @@ for pcm_file in my_pcm_data:
     
     # PCM을 WAV로 변환
     pcm_to_wav(pcm_sound, pcm_to_wav_sound, channels=1, sample_width=2, frame_rate=16000)
+    print(".pcm을 .wav로 변환 완료")
+    
+    # VAD 적용하여 새로운 .wav 파일 저장
+    apply_vad_wav = os.path.join(pcm_directory, f"VAD_{os.path.splitext(pcm_file)[0]}.wav")
+    wav_to_vad(wav_file, apply_vad_wav)
+    print(".wav 파일에 VAD 알고리즘 적용 완료")
     
     # WAV 파일 읽기
     y, sr = librosa.load(pcm_to_wav_sound)
@@ -110,6 +138,7 @@ for pcm_file in my_pcm_data:
     plt.axis('off')
     plt.savefig(output_filename, bbox_inches='tight', pad_inches=0)
     plt.close()
+    print(".wav 파일에 Mel 알고리즘 적용 완료")
     
     # 이미지 변환 함수 호출
     change_picture()
