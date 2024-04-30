@@ -74,10 +74,10 @@ def change_picture():
 
 # ----------------------------------------------------------------
 # VAD 알고리즘
-def wav_to_vad(no_vad_wav, vad_wav):
+def wav_to_vad(no_vad_wav, apply_vad_wav):
     y, sr = librosa.load(no_vad_wav)
     y_trimmed, index = librosa.effects.trim(y, top_db=30)
-    sf.write(vad_wav, y_trimmed, sr)
+    sf.write(apply_vad_wav, y_trimmed, sr)
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
@@ -100,8 +100,8 @@ for pcm_file in my_pcm_data:
     print(".pcm을 .wav로 변환 완료")
     
     # VAD 적용하여 새로운 .wav 파일 저장
-    apply_vad_wav = os.path.join(pcm_directory, f"VAD_{os.path.splitext(pcm_file)[0]}.wav")
-    wav_to_vad(wav_file, apply_vad_wav)
+    vad_wav_file = os.path.join(pcm_directory, f"VAD_{os.path.splitext(pcm_file)[0]}.wav")
+    wav_to_vad(wav_file, vad_wav_file)
     print(".wav 파일에 VAD 알고리즘 적용 완료")
     
     # WAV 파일 읽기
