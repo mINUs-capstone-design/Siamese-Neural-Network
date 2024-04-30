@@ -3,9 +3,11 @@
 import os
 import numpy as np
 import librosa
+import librosa.display
 import matplotlib.pyplot as plt
 import wave
-# import struct
+from PIL import Image
+import glob
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
@@ -33,10 +35,31 @@ def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
             wav.writeframes(data)
 # ----------------------------------------------------------------
 
+# 현재 실행 중인 파일의 경로
+current_directory = os.path.dirname(os.path.abspath(__file__))
+
+# ----------------------------------------------------------------
+# 이미지 변환 함수
+def change_picture():
+    input_dir = '.'
+    output_dir = '.'
+    
+    # 이미지 읽어오기
+    images = [file for file in os.listdir(current_directory) if file.endswith(".png")]
+    cnt = 1
+    
+    # 이미지를 순회하며 작업 수행
+    for img_name in images:
+        img_path = os.path.join(input_dir, img_name)
+        img = Image.open(img_path)  # 이미지 열기
+        img = img.convert("RGB")  # 이미지를 RGB 형식으로 변환
+        img.save(os.path.join(output_dir, f'c_{cnt}.jpg'))  # JPG로 저장
+        cnt += 1
+# ----------------------------------------------------------------
+
 # ----------------------------------------------------------------
 #3
 # 현재 위치한 디렉토리 내의 확장자가 .pcm인 모든 파일 불러오기
-# 경로 필요할때마다 수정하기 (현재는 코드파일과 같은 곳에 위치한 것 사용)
 pcm_directory = "."
 
 my_pcm_data = [f for f in os.listdir('.') if f.endswith(".pcm")]
@@ -66,7 +89,6 @@ for pcm_file in my_pcm_data:
     plt.figure(figsize=(10, 4))
     axes = librosa.display.specshow(mel_spectrogram_db, sr=sr, x_axis='time', y_axis='mel')
     
-    
     # plot 그래프 이미지만 나타내기
     plt.yticks(ticks= []) # y축 tick 제거
     plt.xticks(ticks= []) # x축 tick 제거
@@ -88,4 +110,8 @@ for pcm_file in my_pcm_data:
     plt.axis('off')
     plt.savefig(output_filename, bbox_inches='tight', pad_inches=0)
     plt.close()
+    
+    # 이미지 변환 함수 호출
+    change_picture()
+    print("이미지 변환 완료")
 # ----------------------------------------------------------------
