@@ -3,8 +3,7 @@
 KsponSpeech_[숫자].pcm : .wav로 변환 전 원본 .pcm 파일
 KsponSpeech_[숫자].wav : .pcm -> .wav로 변환된 파일
 VAD_KsponSpeech_[숫자].wav : VAD 알고리즘 적용된 .wav 파일
-Mel_spectrum_KsponSpeech_[숫자].png : RGBA 4채널 Mel 적용 이미지
-c_[숫자].jpg : RGB 3채널로 변환된 Mel 적용 이미지
+Mel_spectrum_KsponSpeech_[숫자].jpg : RGB 3채널 Mel 적용 이미지
 """
 
 # ----------------------------------------------------------------
@@ -21,7 +20,7 @@ from scipy.io.wavfile import read
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
-# .pcm -> .wav 변환하는 파트
+# .pcm -> .wav 변환함수
 def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
     # PCM 파일 열기
     with open(pcm_file, 'rb') as pcm:
@@ -38,11 +37,6 @@ def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
-# 현재 실행 중인 파일의 경로
-current_directory = os.path.dirname(os.path.abspath(__file__))
-# ----------------------------------------------------------------
-
-# ----------------------------------------------------------------
 # VAD 알고리즘
 def wav_to_vad(no_vad_wav, apply_vad_wav):
     y, sr = librosa.load(no_vad_wav)
@@ -52,9 +46,9 @@ def wav_to_vad(no_vad_wav, apply_vad_wav):
 
 # ----------------------------------------------------------------
 # 현재 위치한 디렉토리 내의 확장자가 .pcm인 모든 파일 불러오기
-pcm_directory = "."
+pcm_directory = "/content/drive/MyDrive/kr"
 
-my_pcm_data = [f for f in os.listdir('.') if f.endswith(".pcm")]
+my_pcm_data = [f for f in os.listdir(pcm_directory) if f.endswith(".pcm")]
 
 # 반복하여 한번에 여러 파일 처리
 for pcm_file in my_pcm_data:
@@ -108,6 +102,3 @@ for pcm_file in my_pcm_data:
     plt.savefig(output_filename, bbox_inches='tight', pad_inches=0)
     plt.close()
     print(".wav 파일에 Mel 알고리즘 적용 완료")
-    
-    print("종료")
-# ----------------------------------------------------------------
