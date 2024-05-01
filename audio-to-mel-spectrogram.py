@@ -43,25 +43,6 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
-# 이미지 변환 함수
-def change_picture():
-    input_dir = '.'
-    output_dir = '.'
-    
-    # 이미지 읽어오기
-    images = [file for file in os.listdir(current_directory) if file.endswith(".png")]
-    cnt = 1
-    
-    # 이미지를 순회하며 작업 수행
-    for img_name in images:
-        img_path = os.path.join(input_dir, img_name)
-        img = Image.open(img_path)  # 이미지 열기
-        img = img.convert("RGB")  # 이미지를 RGB 형식으로 변환
-        img.save(os.path.join(output_dir, f'c_{cnt}.jpg'))  # JPG로 저장
-        cnt += 1
-# ----------------------------------------------------------------
-
-# ----------------------------------------------------------------
 # VAD 알고리즘
 def wav_to_vad(no_vad_wav, apply_vad_wav):
     y, sr = librosa.load(no_vad_wav)
@@ -122,13 +103,11 @@ for pcm_file in my_pcm_data:
     plt.colorbar().remove()
 
     # 이미지 저장 (그래프 내용 부분만...흰 배경X)
-    output_filename = os.path.join(pcm_directory, f"Mel_spectrum_{os.path.splitext(os.path.basename(wav_file))[0]}.png")
+    output_filename = os.path.join(pcm_directory, f"Mel_spectrum_{os.path.splitext(os.path.basename(wav_file))[0]}.jpg")
     plt.axis('off')
     plt.savefig(output_filename, bbox_inches='tight', pad_inches=0)
     plt.close()
     print(".wav 파일에 Mel 알고리즘 적용 완료")
     
-    # 이미지 변환 함수 호출
-    change_picture()
-    print("이미지 변환 완료")
+    print("종료")
 # ----------------------------------------------------------------
