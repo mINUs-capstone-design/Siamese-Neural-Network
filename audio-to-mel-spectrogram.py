@@ -65,6 +65,7 @@ for pcm_file in my_pcm_data:
     # VAD 적용하여 새로운 .wav 파일 저장
     vad_wav_file = os.path.join(pcm_directory, f"VAD_{os.path.splitext(pcm_file)[0]}.wav")
     wav_to_vad(wav_file, vad_wav_file)
+    wav_file = vad_wav_file
     print(".wav 파일에 VAD 알고리즘 적용 완료")
     
     # WAV 파일 읽기
