@@ -28,15 +28,22 @@ from scipy.io.wavfile import read
 def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
     # PCM 파일 열기
     with open(pcm_file, 'rb') as pcm:
+        # PCM 파일의 오디오 데이터 길이 확인 -> 이 부분이 없으면 배속으로 저장됨
+        data = pcm.read()
+        pcm_length = len(data)
+        
+        # 오디오의 샘플 수 계산
+        num_samples = pcm_length // (channels * sample_width)
+        
         # WAV 파일 열기
         with wave.open(wav_file, 'wb') as wav:
             # WAV 파일 헤더 설정
             wav.setnchannels(channels)
             wav.setsampwidth(sample_width)
             wav.setframerate(frame_rate)
+            wav.setnframes(num_samples)
             
             # 오디오 데이터 쓰기
-            data = pcm.read()
             wav.writeframes(data)
 # ----------------------------------------------------------------
 
@@ -85,10 +92,9 @@ for pcm_file in my_pcm_data:
     
     # .wav 파일의 경로
     wav_file = os.path.join(pcm_directory, os.path.splitext(pcm_file)[0] + ".wav")
-    pcm_to_wav_sound = os.path.join(pcm_directory, wav_file)
     
     # PCM을 WAV로 변환
-    pcm_to_wav(pcm_sound, pcm_to_wav_sound, channels=1, sample_width=2, frame_rate=16000)
+    pcm_to_wav(pcm_sound, wav_file, channels=1, sample_width=2, frame_rate=16000)
     print(".pcm을 .wav로 변환 완료")
     
     # VAD 적용하여 새로운 .wav 파일 저장
@@ -97,7 +103,7 @@ for pcm_file in my_pcm_data:
     print(".wav 파일에 VAD 알고리즘 적용 완료")
     
     # WAV 파일 읽기
-    y, sr = librosa.load(pcm_to_wav_sound)
+    y, sr = librosa.load(wav_file)
     
     # Mel-spectrogram 계산
     mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr)
@@ -126,7 +132,7 @@ for pcm_file in my_pcm_data:
     plt.colorbar().remove()
 
     # 이미지 저장 (그래프 내용 부분만...흰 배경X)
-    output_filename = os.path.join(pcm_directory, f"Mel_spectrum_{os.path.splitext(os.path.basename(pcm_to_wav_sound))[0]}.png")
+    output_filename = os.path.join(pcm_directory, f"Mel_spectrum_{os.path.splitext(os.path.basename(wav_file))[0]}.png")
     plt.axis('off')
     plt.savefig(output_filename, bbox_inches='tight', pad_inches=0)
     plt.close()
