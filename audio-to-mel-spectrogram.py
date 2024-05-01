@@ -84,7 +84,7 @@ def wav_to_vad(no_vad_wav, apply_vad_wav):
 # 현재 위치한 디렉토리 내의 확장자가 .pcm인 모든 파일 불러오기
 pcm_directory = "."
 
-my_pcm_data = [f for f in os.listdir('.') if f.endswith(".pcm")]
+my_pcm_data = [f for f in os.listdir(pcm_directory) if f.endswith(".pcm")]
 
 # 반복하여 한번에 여러 파일 처리
 for pcm_file in my_pcm_data:
