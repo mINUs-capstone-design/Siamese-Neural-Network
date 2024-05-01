@@ -14,12 +14,9 @@ import librosa
 import librosa.effects
 import librosa.display
 import soundfile as sf
-import datetime
-import glob
 import wave
 from PIL import Image
 import matplotlib.pyplot as plt
-import scipy
 from scipy.io.wavfile import read
 # ----------------------------------------------------------------
 
@@ -28,22 +25,15 @@ from scipy.io.wavfile import read
 def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
     # PCM 파일 열기
     with open(pcm_file, 'rb') as pcm:
-        # PCM 파일의 오디오 데이터 길이 확인 -> 이 부분이 없으면 배속으로 저장됨
-        data = pcm.read()
-        pcm_length = len(data)
-        
-        # 오디오의 샘플 수 계산
-        num_samples = pcm_length // (channels * sample_width)
-        
         # WAV 파일 열기
         with wave.open(wav_file, 'wb') as wav:
             # WAV 파일 헤더 설정
             wav.setnchannels(channels)
             wav.setsampwidth(sample_width)
             wav.setframerate(frame_rate)
-            wav.setnframes(num_samples)
             
             # 오디오 데이터 쓰기
+            data = pcm.read()
             wav.writeframes(data)
 # ----------------------------------------------------------------
 
