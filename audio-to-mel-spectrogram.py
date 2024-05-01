@@ -1,4 +1,3 @@
-
 """
 <각 파일 이름>
 KsponSpeech_[숫자].pcm : .wav로 변환 전 원본 .pcm 파일
@@ -29,22 +28,15 @@ from scipy.io.wavfile import read
 def pcm_to_wav(pcm_file, wav_file, channels, sample_width, frame_rate):
     # PCM 파일 열기
     with open(pcm_file, 'rb') as pcm:
-        # PCM 파일의 오디오 데이터 길이 확인 -> 이 부분이 없으면 배속으로 저장됨
-        data = pcm.read()
-        pcm_length = len(data)
-        
-        # 오디오의 샘플 수 계산
-        num_samples = pcm_length // (channels * sample_width)
-        
         # WAV 파일 열기
         with wave.open(wav_file, 'wb') as wav:
             # WAV 파일 헤더 설정
             wav.setnchannels(channels)
             wav.setsampwidth(sample_width)
             wav.setframerate(frame_rate)
-            wav.setnframes(num_samples)
             
             # 오디오 데이터 쓰기
+            data = pcm.read()
             wav.writeframes(data)
 # ----------------------------------------------------------------
 
@@ -84,7 +76,7 @@ def wav_to_vad(no_vad_wav, apply_vad_wav):
 # 현재 위치한 디렉토리 내의 확장자가 .pcm인 모든 파일 불러오기
 pcm_directory = "."
 
-my_pcm_data = [f for f in os.listdir(pcm_directory) if f.endswith(".pcm")]
+my_pcm_data = [f for f in os.listdir('.') if f.endswith(".pcm")]
 
 # 반복하여 한번에 여러 파일 처리
 for pcm_file in my_pcm_data:
