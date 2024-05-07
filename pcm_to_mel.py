@@ -30,7 +30,7 @@ def pcm_to_wav(pcm_data, wav_data, channels, sample_width, frame_rate):
             wav.setnchannels(channels)
             wav.setsampwidth(sample_width)
             wav.setframerate(frame_rate)
-            
+
             # 오디오 데이터 쓰기
             data = pcm.read()
             wav.writeframes(data)
@@ -47,7 +47,7 @@ def wav_to_vad(wav_data, path):
 # ----------------------------------------------------------------
 # 현재 위치한 디렉토리 내의 확장자가 .pcm인 모든 파일 불러오기
 data_dir = "/content/drive/MyDrive/kr"
-save_dir = "/content/test"
+save_dir = "/content/drive/MyDrive/"
 
 original_files = [f for f in os.listdir(data_dir) if f.endswith(".pcm")]
 
@@ -57,11 +57,11 @@ for original_file in original_files:
     original_path = os.path.join(data_dir, original_file)
     # .wav 파일의 경로
     wav_path = os.path.join(save_dir, os.path.splitext(original_file)[0] + ".wav")
-    
+
     # PCM을 WAV로 변환
     pcm_to_wav(original_path, wav_path, channels=1, sample_width=2, frame_rate=16000)
     print(".pcm을 .wav로 변환 완료")
-    
+
     # VAD 적용하여 새로운 .wav 파일 저장
     vad_wav_path = os.path.join(save_dir, f"VAD_{os.path.splitext(original_file)[0]}.wav")
     wav_to_vad(wav_path, vad_wav_path)
@@ -70,21 +70,21 @@ for original_file in original_files:
 
     # WAV 파일 읽기
     y, sr = librosa.load(wav_path)
-    
+
     # Mel-spectrogram 계산
     mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr)
-    
+
     # Mel-spectrogram을 데시벨로 변환
     mel_spectrogram_db = librosa.power_to_db(mel_spectrogram, ref=np.max)
-    
+
     # Mel-spectrogram 플로팅
-    plt.figure(figsize=(10, 4))
+    plt.figure(figsize=(10, 4)) # img 사이즈 변경
     axes = librosa.display.specshow(mel_spectrogram_db, sr=sr, x_axis='time', y_axis='mel')
-    
+
     # plot 그래프 이미지만 나타내기
     plt.yticks(ticks= []) # y축 tick 제거
     plt.xticks(ticks= []) # x축 tick 제거
-    
+
     # # x축, y축 각각 눈금 & 테두리 제거
     plt.gca().axes.get_xaxis().set_visible(False)
     plt.gca().axes.get_yaxis().set_visible(False)
