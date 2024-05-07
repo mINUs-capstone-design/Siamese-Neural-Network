@@ -39,7 +39,7 @@ def compute_accuracy(model, test_loader, threshold=0.5): # margin 1.0 -> 0.74
     with torch.no_grad():
         for data1, data2, labels in test_loader:
 
-            data1, data2, labels = data1.cuda(), data2.cuda(), labels.cuda()
+            #data1, data2, labels = data1.cuda(), data2.cuda(), labels.cuda()
             output1, output2 = model(data1, data2)
 
             euclidean_distance = F.pairwise_distance(output1, output2)
@@ -140,7 +140,7 @@ class SiameseNetwork(nn.Module):
         return output1, output2
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = torch.load("siamese_net_v4.pt", map_location=device)
+model = torch.load("siamese_net_v4_cpu.pt", map_location=device)
 print(model)
 
 folder_dataset_test = dset.ImageFolder(root=Config.testing_dir)
@@ -161,10 +161,10 @@ for i in range(10):
     x0,x1,label1 = next(dataiter)
     concatenated = torch.cat((x0,x1),0)
 
-    output1,output2 = model(Variable(x0).cuda(),Variable(x1).cuda())
+    # output1,output2 = model(Variable(x0).cuda(),Variable(x1).cuda())
+    output1,output2 = model(Variable(x0),Variable(x1))
     euclidean_distance = F.pairwise_distance(output1, output2)
     imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
-
 
 
 
