@@ -15,6 +15,9 @@ import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
 
+class Config():
+    testing_dir = "/content/drive/MyDrive/testing" 
+
 def imshow(img,text=None,should_save=False):
     npimg = img.numpy()
     plt.axis("off")
