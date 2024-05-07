@@ -30,28 +30,6 @@ def show_plot(iteration,loss):
     plt.plot(iteration,loss)
     plt.show()
 
-def compute_accuracy(model, test_loader, threshold=0.5): # margin 1.0 -> 0.74
-    correct = 0
-    total = 0
-
-    model.eval()  # 평가 모드로 설정
-
-    with torch.no_grad():
-        for data1, data2, labels in test_loader:
-
-            #data1, data2, labels = data1.cuda(), data2.cuda(), labels.cuda()
-            output1, output2 = model(data1, data2)
-
-            euclidean_distance = F.pairwise_distance(output1, output2)
-            predicted = (euclidean_distance > threshold).float()  # 유사성을 확인하기 위한 임계값 적용
-            correct += (predicted == labels).sum().item()
-            total += labels.size(0)
-
-    accuracy = correct / total
-    accuracy *= 100
-    return accuracy
-
-
 class SiameseNetworkDataset(Dataset):
 
     def __init__(self,imageFolderDataset,transform=None,should_invert=False):
@@ -165,11 +143,3 @@ for i in range(10):
     output1,output2 = model(Variable(x0),Variable(x1))
     euclidean_distance = F.pairwise_distance(output1, output2)
     imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
-
-
-
-result = 0
-for i in range(0,100):
-  acc = int(compute_accuracy(model, test_dataloader))
-  result += acc
-print("accuracy : {}%".format(result/100))
