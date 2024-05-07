@@ -128,6 +128,6 @@ for i in range(10):
 
 result = 0
 for i in range(0,100):
-  acc = int(compute_accuracy(net, test_dataloader))
+  acc = int(compute_accuracy(model, test_dataloader))
   result += acc
 print("accuracy : {}%".format(result/100))
