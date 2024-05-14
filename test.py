@@ -30,6 +30,17 @@ def imshow(img,text=None,should_save=False):
 def show_plot(iteration,loss):
     plt.plot(iteration,loss)
     plt.show()
+    
+def getScore(dissimilarity):
+  
+  if dissimilarity >= 2.0:
+    score = 0
+  else:
+    score = 100 - dissimilarity*50
+    score = round(score)
+  
+  return score
+  
 
 class SiameseNetworkDataset(Dataset):
 
@@ -147,5 +158,7 @@ for i in range(10):
     output1,output2 = model(Variable(x0),Variable(x1))
     euclidean_distance = F.pairwise_distance(output1, output2)
     print(f"left img's name : {os.path.basename(str(x0_path))}\nright img's name : {os.path.basename(str(x1_path))}")
+    print(f"score : {getScore(euclidean_distance.item())}")
     imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
+    
     
