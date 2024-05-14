@@ -1,4 +1,4 @@
-import torchvision
+
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader,Dataset
@@ -8,10 +8,8 @@ import numpy as np
 import random
 from PIL import Image
 import torch
-from torch.autograd import Variable
 import PIL.ImageOps
 import torch.nn as nn
-from torch import optim
 import torch.nn.functional as F
 import os
 
@@ -25,10 +23,6 @@ def imshow(img,text=None,should_save=False):
         plt.text(75, 8, text, style='italic',fontweight='bold',
             bbox={'facecolor':'white', 'alpha':0.8, 'pad':10})
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
-
-def show_plot(iteration,loss):
-    plt.plot(iteration,loss)
     plt.show()
     
 def getScore(dissimilarity):
@@ -134,7 +128,6 @@ class SiameseNetwork(nn.Module):
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = torch.load("./model/siamese_net_v4.pt", map_location=device)
-print(model)
 
 folder_dataset_test = dset.ImageFolder(root=Config.testing_dir)
 siamese_dataset = SiameseNetworkDataset(imageFolderDataset=folder_dataset_test,
@@ -154,11 +147,9 @@ for i in range(10):
     x0,x1,label1,x0_path,x1_path = next(dataiter)
     concatenated = torch.cat((x0,x1),0)
 
-    # output1,output2 = model(Variable(x0).cuda(),Variable(x1).cuda())
-    output1,output2 = model(Variable(x0),Variable(x1))
+    output1, output2 = model(x0, x1)
     euclidean_distance = F.pairwise_distance(output1, output2)
     print(f"left img's name : {os.path.basename(str(x0_path))}\nright img's name : {os.path.basename(str(x1_path))}")
     print(f"score : {getScore(euclidean_distance.item())}")
     imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
-    
     
