@@ -13,9 +13,10 @@ import PIL.ImageOps
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
+import os
 
 class Config():
-    testing_dir = "/content/drive/MyDrive/testing" 
+    testing_dir = "./data/testing" 
 
 def imshow(img,text=None,should_save=False):
     npimg = img.numpy()
@@ -54,6 +55,9 @@ class SiameseNetworkDataset(Dataset):
                 if img0_tuple[1] !=img1_tuple[1]:
                     break
 
+        img0_path = img0_tuple[0]
+        img1_path = img1_tuple[0]
+
         img0 = Image.open(img0_tuple[0])
         img1 = Image.open(img1_tuple[0])
         
@@ -66,7 +70,7 @@ class SiameseNetworkDataset(Dataset):
             img0 = self.transform(img0)
             img1 = self.transform(img1)
 
-        return img0, img1 , torch.from_numpy(np.array([int(img1_tuple[1]!=img0_tuple[1])],dtype=np.float32))
+        return img0, img1 , torch.from_numpy(np.array([int(img1_tuple[1]!=img0_tuple[1])],dtype=np.float32)), img0_path, img1_path
         # 두 이미지가 서로 다른 클래스면 1
         # 두 이미지가 서로 같은 클래스면 0
 
@@ -118,7 +122,7 @@ class SiameseNetwork(nn.Module):
         return output1, output2
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = torch.load("siamese_net_v4_cpu.pt", map_location=device)
+model = torch.load("./model/siamese_net_v4.pt", map_location=device)
 print(model)
 
 folder_dataset_test = dset.ImageFolder(root=Config.testing_dir)
@@ -128,7 +132,7 @@ siamese_dataset = SiameseNetworkDataset(imageFolderDataset=folder_dataset_test,
                                                                       ])
                                        ,should_invert=False)
 
-test_dataloader = DataLoader(siamese_dataset,num_workers=1,batch_size=1,shuffle=True) # 1장씩 test
+test_dataloader = DataLoader(siamese_dataset,num_workers=0,batch_size=1,shuffle=True) # 1장씩 test
 
 
 dataiter = iter(test_dataloader)
@@ -136,10 +140,11 @@ dataiter = iter(test_dataloader)
 # 0 : same class , 1 : other class
 
 for i in range(10):
-    x0,x1,label1 = next(dataiter)
+    x0,x1,label1,x0_path,x1_path = next(dataiter)
     concatenated = torch.cat((x0,x1),0)
 
     # output1,output2 = model(Variable(x0).cuda(),Variable(x1).cuda())
     output1,output2 = model(Variable(x0),Variable(x1))
     euclidean_distance = F.pairwise_distance(output1, output2)
     imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
+    print(f"left img's name : {os.path.basename(str(x0_path))}\nright img's name : {os.path.basename(str(x1_path))}")
