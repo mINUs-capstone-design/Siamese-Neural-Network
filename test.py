@@ -146,5 +146,6 @@ for i in range(10):
     # output1,output2 = model(Variable(x0).cuda(),Variable(x1).cuda())
     output1,output2 = model(Variable(x0),Variable(x1))
     euclidean_distance = F.pairwise_distance(output1, output2)
-    imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
     print(f"left img's name : {os.path.basename(str(x0_path))}\nright img's name : {os.path.basename(str(x1_path))}")
+    imshow(torchvision.utils.make_grid(concatenated),'isNotSame : {:.0f}\nDissimilarity: {:.2f}'.format(label1.item(),euclidean_distance.item()))
+    
