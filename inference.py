@@ -70,9 +70,6 @@ x1 = Image.open("data/testing/korean/man.jpg")
 convert_tensor = transforms.Compose([transforms.Resize((99,250)),transforms.ToTensor()])
 x0 = convert_tensor(x0).unsqueeze(0)
 x1 = convert_tensor(x1).unsqueeze(0)
-print(x0.shape)
-print(x1.shape)
-
 
 output1, output2 = model(x0, x1)
 euclidean_distance = F.pairwise_distance(output1, output2)
